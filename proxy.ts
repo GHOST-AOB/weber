@@ -28,6 +28,14 @@ export async function proxy(request: NextRequest) {
   // Check if this is a protected route
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
+  // Root path - redirect to dashboard if authenticated, else to login
+  if (pathname === '/') {
+    if (session) {
+      return Response.redirect(new URL('/dashboard', request.url));
+    }
+    return Response.redirect(new URL('/login', request.url));
+  }
+
   // Protected routes - redirect to login if not authenticated
   if (isProtectedRoute && !session) {
     return Response.redirect(new URL('/login', request.url));
@@ -39,11 +47,12 @@ export async function proxy(request: NextRequest) {
   }
 
   // Allow all other requests to pass through
-  return new Response(null, { status: 404 });
+  return new Response(null, { status: 200 });
 }
 
 export const config = {
   matcher: [
+    '/',
     '/dashboard/:path*',
     '/projects/:path*',
     '/tasks/:path*',

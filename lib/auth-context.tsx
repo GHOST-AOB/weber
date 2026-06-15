@@ -20,6 +20,7 @@ interface AuthContextType {
   weberUser: WeberUser | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
+  signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   isAdmin: boolean
   isTeamMember: boolean
@@ -35,28 +36,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const supabase = createClient()
 
   useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (user) {
+        try {
+          const { data } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', user.id)
+            .single()
+          
+          setWeberUser(data as WeberUser | null)
+        } catch (err) {
+          // Profile might not exist yet - create basic info from auth
+          setWeberUser({
+            id: user.id,
+            email: user.email || '',
+            full_name: user.user_metadata?.full_name || null,
+            role: 'team_member',
+            organization_id: null,
+            client_id: null,
+          })
+        }
+      } else {
+        setWeberUser(null)
+      }
+      setLoading(false)
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
       
       if (session?.user) {
-        const { data } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-        
-        setWeberUser(data as WeberUser | null)
+        await fetchUserProfile()
       } else {
         setWeberUser(null)
+        setLoading(false)
       }
-      
-      setLoading(false)
     })
 
-    // Initial check
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
-      setLoading(false)
+      if (session?.user) {
+        fetchUserProfile()
+      } else {
+        setLoading(false)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -64,6 +88,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
+    return { error: error ? new Error(error.message) : null }
+  }
+
+  const signUp = async (email: string, password: string, fullName: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    })
     return { error: error ? new Error(error.message) : null }
   }
 
@@ -77,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       weberUser,
       loading,
       signIn,
+      signUp,
       signOut,
       isAdmin: weberUser?.role === 'admin',
       isTeamMember: weberUser?.role === 'team_member',

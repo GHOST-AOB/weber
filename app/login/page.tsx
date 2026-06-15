@@ -8,6 +8,8 @@ import { Button, Input, Card, Spinner } from '@/app/components/ui'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [fullName, setFullName] = useState('')
+  const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
@@ -18,16 +20,31 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
 
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    let result
+    if (isSignUp) {
+      result = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      })
+    } else {
+      result = await supabase.auth.signInWithPassword({ email, password })
+    }
 
-    if (authError) {
-      setError(authError.message)
+    if (result.error) {
+      setError(result.error.message)
       setLoading(false)
     } else {
-      router.push('/dashboard')
+      if (isSignUp && result.data?.session === null) {
+        setError('Check your email for the confirmation link!')
+        setLoading(false)
+      } else {
+        router.push('/dashboard')
+      }
     }
   }
 
@@ -40,6 +57,16 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {isSignUp && (
+            <Input
+              label="Full Name"
+              type="text"
+              value={fullName}
+              onChange={setFullName}
+              placeholder="Enter your name"
+            />
+          )}
+
           <Input
             label="Email"
             type="email"
@@ -65,9 +92,21 @@ export default function LoginPage() {
             className="w-full"
             disabled={loading}
           >
-            {loading ? <Spinner size="sm" /> : 'Sign In'}
+            {loading ? <Spinner size="sm" /> : isSignUp ? 'Sign Up' : 'Sign In'}
           </Button>
         </form>
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => {
+              setIsSignUp(!isSignUp)
+              setError('')
+            }}
+            className="text-sm text-[#1976D2] hover:underline"
+          >
+            {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
+          </button>
+        </div>
 
         <p className="mt-6 text-center text-sm text-[#757575]">
           Integrated with Spider Web

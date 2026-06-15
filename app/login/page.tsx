@@ -98,6 +98,7 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center">
           <button
+            type="button"
             onClick={() => {
               setIsSignUp(!isSignUp)
               setError('')

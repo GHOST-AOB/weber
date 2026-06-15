@@ -2,30 +2,6 @@
 
 import { ReactNode } from 'react'
 
-// Weber brand colors
-export const colors = {
-  primary: '#1976D2',
-  primaryHover: '#1565C0',
-  primaryLight: '#BBDEFB',
-  black: '#000000',
-  blackLight: '#1A1A1A',
-  grey50: '#FAFAFA',
-  grey100: '#F5F5F5',
-  grey200: '#EEEEEE',
-  grey300: '#E0E0E0',
-  grey400: '#BDBDBD',
-  grey500: '#9E9E9E',
-  grey600: '#757575',
-  grey700: '#616161',
-  grey800: '#424242',
-  grey900: '#212121',
-  white: '#FFFFFF',
-  success: '#4CAF50',
-  warning: '#FF9800',
-  error: '#F44336',
-  info: '#2196F3',
-}
-
 interface ButtonProps {
   children: ReactNode
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'
@@ -48,11 +24,11 @@ export function Button({
   const baseStyles = 'font-medium rounded-lg transition-all duration-200 inline-flex items-center justify-center gap-2'
   
   const variants = {
-    primary: `bg-[${colors.primary}] hover:bg-[${colors.primaryHover}] text-white shadow-md hover:shadow-lg`,
-    secondary: `bg-[${colors.grey800}] hover:bg-[${colors.grey900}] text-white`,
-    outline: `border-2 border-[${colors.primary}] text-[${colors.primary}] hover:bg-[${colors.primaryLight}]`,
-    ghost: `text-[${colors.grey700}] hover:bg-[${colors.grey100}]`,
-    danger: `bg-[${colors.error}] hover:bg-red-700 text-white`,
+    primary: 'bg-[#1976D2] hover:bg-[#1565C0] text-white shadow-md hover:shadow-lg',
+    secondary: 'bg-[#424242] hover:bg-[#212121] text-white',
+    outline: 'border-2 border-[#1976D2] text-[#1976D2] hover:bg-[#BBDEFB]',
+    ghost: 'text-[#616161] hover:bg-[#F5F5F5]',
+    danger: 'bg-[#F44336] hover:bg-red-700 text-white',
   }
   
   const sizes = {
@@ -97,7 +73,7 @@ export function Input({
   return (
     <div className={`space-y-1 ${className}`}>
       {label && (
-        <label className={`block text-sm font-medium text-[${colors.grey700}]`}>
+        <label className="block text-sm font-medium text-[#616161]">
           {label}
         </label>
       )}
@@ -107,14 +83,14 @@ export function Input({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className={`w-full px-4 py-2 border rounded-lg text-[${colors.grey900}] 
-          bg-white border-[${colors.grey300}] 
-          focus:outline-none focus:ring-2 focus:ring-[${colors.primary}] focus:border-transparent
-          placeholder:text-[${colors.grey400}]
-          ${disabled ? 'bg-[${colors.grey100}] cursor-not-allowed' : ''}
-          ${error ? 'border-[${colors.error}]' : ''}`}
+        className={`w-full px-4 py-2 border rounded-lg text-[#212121] 
+          bg-white border-[#E0E0E0] 
+          focus:outline-none focus:ring-2 focus:ring-[#1976D2] focus:border-transparent
+          placeholder:text-[#BDBDBD]
+          ${disabled ? 'bg-[#F5F5F5] cursor-not-allowed' : ''}
+          ${error ? 'border-[#F44336]' : ''}`}
       />
-      {error && <p className={`text-sm text-[${colors.error}]`}>{error}</p>}
+      {error && <p className="text-sm text-[#F44336]">{error}</p>}
     </div>
   )
 }
@@ -134,7 +110,7 @@ export function Card({ children, className = '', padding = 'md' }: CardProps) {
   }
 
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-[${colors.grey200}] ${paddings[padding]} ${className}`}>
+    <div className={`bg-white rounded-xl shadow-sm border border-[#EEEEEE] ${paddings[padding]} ${className}`}>
       {children}
     </div>
   )
@@ -148,11 +124,11 @@ interface BadgeProps {
 
 export function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
   const variants = {
-    default: `bg-[${colors.grey200}] text-[${colors.grey800}]`,
-    success: `bg-[${colors.success}] text-white`,
-    warning: `bg-[${colors.warning}] text-white`,
-    error: `bg-[${colors.error}] text-white`,
-    info: `bg-[${colors.info}] text-white`,
+    default: 'bg-[#EEEEEE] text-[#424242]',
+    success: 'bg-[#4CAF50] text-white',
+    warning: 'bg-[#FF9800] text-white',
+    error: 'bg-[#F44336] text-white',
+    info: 'bg-[#2196F3] text-white',
   }
 
   return (
@@ -194,7 +170,7 @@ export function Avatar({ src, name, size = 'md', className = '' }: AvatarProps) 
   }
 
   return (
-    <div className={`${sizes[size]} rounded-full bg-[${colors.primary}] text-white flex items-center justify-center font-medium ${className}`}>
+    <div className={`${sizes[size]} rounded-full bg-[#1976D2] text-white flex items-center justify-center font-medium ${className}`}>
       {initials}
     </div>
   )
@@ -218,11 +194,11 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
           onClick={onClose}
         />
         <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full">
-          <div className="flex items-center justify-between p-4 border-b border-[${colors.grey200}]">
-            <h3 className="text-lg font-semibold text-[${colors.grey900}]">{title}</h3>
+          <div className="flex items-center justify-between p-4 border-b border-[#EEEEEE]">
+            <h3 className="text-lg font-semibold text-[#212121]">{title}</h3>
             <button
               onClick={onClose}
-              className="text-[${colors.grey500}] hover:text-[${colors.grey700}]"
+              className="text-[#9E9E9E] hover:text-[#616161]"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -250,7 +226,7 @@ export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
 
   return (
     <svg
-      className={`animate-spin ${sizes[size]} text-[${colors.primary}] ${className}`}
+      className={`animate-spin ${sizes[size]} text-[#1976D2] ${className}`}
       fill="none"
       viewBox="0 0 24 24"
     >
@@ -284,9 +260,9 @@ export function EmptyState({
 }) {
   return (
     <div className="text-center py-12">
-      {icon && <div className="mx-auto w-12 h-12 text-[${colors.grey400}] mb-4">{icon}</div>}
-      <h3 className="text-lg font-medium text-[${colors.grey900}] mb-2">{title}</h3>
-      {description && <p className="text-[${colors.grey600}] mb-4">{description}</p>}
+      {icon && <div className="mx-auto w-12 h-12 text-[#BDBDBD] mb-4">{icon}</div>}
+      <h3 className="text-lg font-medium text-[#212121] mb-2">{title}</h3>
+      {description && <p className="text-[#757575] mb-4">{description}</p>}
       {action}
     </div>
   )

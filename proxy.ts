@@ -24,22 +24,22 @@ export async function proxy(request: NextRequest) {
 
   // Protected routes
   const protectedRoutes = ['/dashboard', '/projects', '/tasks', '/requests', '/invoices', '/clients', '/team', '/settings'];
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  // Login page - redirect if authenticated
-  if (pathname === '/login' || pathname === '/') {
-    if (session) {
-      return Response.redirect(new URL('/dashboard', request.url));
-    }
-    return new Response(null, { status: 200 });
-  }
+  // Check if this is a protected route
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
   // Protected routes - redirect to login if not authenticated
   if (isProtectedRoute && !session) {
     return Response.redirect(new URL('/login', request.url));
   }
 
-  return new Response(null, { status: 200 });
+  // Login page - redirect to dashboard if already authenticated
+  if (pathname === '/login' && session) {
+    return Response.redirect(new URL('/dashboard', request.url));
+  }
+
+  // Allow all other requests to pass through
+  return new Response(null, { status: 404 });
 }
 
 export const config = {
@@ -53,6 +53,5 @@ export const config = {
     '/team/:path*',
     '/settings/:path*',
     '/login',
-    '/',
   ],
 };

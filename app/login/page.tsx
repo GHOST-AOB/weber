@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Button, Input, Card, Spinner } from '@/app/components/ui'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -23,7 +22,6 @@ export default function LoginPage() {
     setLoading(true)
 
     if (isSignUp) {
-      // Sign up with email confirmation disabled for testing
       const result = await supabase.auth.signUp({
         email,
         password,
@@ -39,11 +37,9 @@ export default function LoginPage() {
         setError(result.error.message)
         setLoading(false)
       } else if (result.data?.session === null) {
-        // Email confirmation required
         setSuccess('Account created! Check your email for the confirmation link.')
         setLoading(false)
       } else {
-        // Auto-confirmed (email confirmation disabled)
         router.push('/dashboard')
       }
     } else {
@@ -59,62 +55,164 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F5F5F5]">
-      <Card className="w-full max-w-md" padding="lg">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-[#212121] mb-2">Weber</h1>
-          <p className="text-[#757575]">Management System</p>
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#F5F5F5'
+    }}>
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+        padding: '32px',
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#212121',
+            marginBottom: '8px'
+          }}>
+            Weber
+          </h1>
+          <p style={{ color: '#757575' }}>Management System</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {isSignUp && (
-            <Input
-              label="Full Name"
-              type="text"
-              value={fullName}
-              onChange={setFullName}
-              placeholder="Enter your name"
-            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <label style={{
+                fontSize: '14px',
+                fontWeight: '500',
+                color: '#616161'
+              }}>
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Enter your name"
+                style={{
+                  width: '100%',
+                  padding: '12px',
+                  border: '1px solid #E0E0E0',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  outline: 'none'
+                }}
+              />
+            </div>
           )}
 
-          <Input
-            label="Email"
-            type="email"
-            value={email}
-            onChange={setEmail}
-            placeholder="Enter your email"
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#616161'
+            }}>
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #E0E0E0',
+                borderRadius: '8px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
 
-          <Input
-            label="Password"
-            type="password"
-            value={password}
-            onChange={setPassword}
-            placeholder="Enter your password"
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{
+              fontSize: '14px',
+              fontWeight: '500',
+              color: '#616161'
+            }}>
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              style={{
+                width: '100%',
+                padding: '12px',
+                border: '1px solid #E0E0E0',
+                borderRadius: '8px',
+                fontSize: '14px',
+                outline: 'none'
+              }}
+            />
+          </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-600">{error}</p>
+            <div style={{
+              padding: '12px',
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
+              borderRadius: '8px'
+            }}>
+              <p style={{ fontSize: '14px', color: '#dc2626' }}>{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-600">{success}</p>
+            <div style={{
+              padding: '12px',
+              backgroundColor: '#f0fdf4',
+              border: '1px solid #bbf7d0',
+              borderRadius: '8px'
+            }}>
+              <p style={{ fontSize: '14px', color: '#16a34a' }}>{success}</p>
             </div>
           )}
 
-          <Button
+          <button
             type="submit"
-            className="w-full"
             disabled={loading}
+            style={{
+              width: '100%',
+              padding: '12px',
+              backgroundColor: loading ? '#1976D280' : '#1976D2',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '16px',
+              fontWeight: '500',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
           >
-            {loading ? <Spinner size="sm" /> : isSignUp ? 'Sign Up' : 'Sign In'}
-          </Button>
+            {loading ? (
+              <span style={{
+                display: 'inline-block',
+                width: '16px',
+                height: '16px',
+                border: '2px solid transparent',
+                borderTopColor: 'white',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }} />
+            ) : isSignUp ? 'Sign Up' : 'Sign In'}
+          </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div style={{ marginTop: '24px', textAlign: 'center' }}>
           <button
             type="button"
             onClick={() => {
@@ -122,16 +220,39 @@ export default function LoginPage() {
               setError('')
               setSuccess('')
             }}
-            className="text-sm text-[#1976D2] hover:underline"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#1976D2',
+              fontSize: '14px',
+              cursor: 'pointer',
+              textDecoration: 'underline'
+            }}
           >
             {isSignUp ? 'Already have an account? Sign in' : 'Need an account? Sign up'}
           </button>
         </div>
 
-        <p className="mt-6 text-center text-sm text-[#757575]">
+        <p style={{
+          marginTop: '24px',
+          textAlign: 'center',
+          fontSize: '14px',
+          color: '#757575'
+        }}>
           Integrated with Spider Web
         </p>
-      </Card>
+      </div>
+
+      <style jsx>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        input:focus {
+          border-color: #1976D2 !important;
+          box-shadow: 0 0 0 2px #1976D240 !important;
+        }
+      `}</style>
     </div>
   )
 }

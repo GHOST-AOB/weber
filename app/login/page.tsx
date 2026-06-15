@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [fullName, setFullName] = useState('')
   const [isSignUp, setIsSignUp] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
   const router = useRouter()
@@ -18,29 +19,38 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
     setLoading(true)
 
-    let result
     if (isSignUp) {
-      result = await supabase.auth.signUp({
+      // Sign up with email confirmation disabled for testing
+      const result = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
           },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       })
-    } else {
-      result = await supabase.auth.signInWithPassword({ email, password })
-    }
 
-    if (result.error) {
-      setError(result.error.message)
-      setLoading(false)
+      if (result.error) {
+        setError(result.error.message)
+        setLoading(false)
+      } else if (result.data?.session === null) {
+        // Email confirmation required
+        setSuccess('Account created! Check your email for the confirmation link.')
+        setLoading(false)
+      } else {
+        // Auto-confirmed (email confirmation disabled)
+        router.push('/dashboard')
+      }
     } else {
-      if (isSignUp && result.data?.session === null) {
-        setError('Check your email for the confirmation link!')
+      const { error: authError } = await supabase.auth.signInWithPassword({ email, password })
+      
+      if (authError) {
+        setError(authError.message)
         setLoading(false)
       } else {
         router.push('/dashboard')
@@ -84,7 +94,15 @@ export default function LoginPage() {
           />
 
           {error && (
-            <p className="text-sm text-[#F44336]">{error}</p>
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          {success && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm text-green-600">{success}</p>
+            </div>
           )}
 
           <Button
@@ -102,6 +120,7 @@ export default function LoginPage() {
             onClick={() => {
               setIsSignUp(!isSignUp)
               setError('')
+              setSuccess('')
             }}
             className="text-sm text-[#1976D2] hover:underline"
           >

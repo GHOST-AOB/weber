@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { useAuth } from '@/lib/auth-context'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 import { Button, Input, Card, Spinner } from '@/app/components/ui'
 
 export default function LoginPage() {
@@ -9,20 +10,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const supabase = createClient()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
 
-    const { error: authError } = await signIn(email, password)
-    
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
     if (authError) {
       setError(authError.message)
       setLoading(false)
+    } else {
+      router.push('/dashboard')
     }
-    // On success, the auth context will update and redirect
   }
 
   return (
